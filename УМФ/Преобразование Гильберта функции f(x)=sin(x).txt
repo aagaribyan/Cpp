@@ -1,0 +1,60 @@
+#include <math.h>
+#include <iostream>
+using namespace std;
+
+class Complex
+{
+    public:
+        Complex(double num, double denom)
+        {
+            a=num;
+            b=denom;
+        }
+    Complex operator+(Complex &);
+    Complex operator-(Complex &);
+    Complex operator*(Complex &);
+    Complex operator/(Complex &);
+    void show();
+    double a,b;
+};
+
+Complex Complex::operator+(Complex &t)
+{  return Complex(a+t.a, b+t.b); }
+
+Complex Complex::operator-(Complex &t)
+{   return Complex(a-t.a, b-t.b); }
+
+Complex Complex::operator*(Complex &t)
+{   return Complex(a*t.a-b*t.b, a*t.b+b*t.a); }
+
+Complex Complex::operator/(Complex &t)
+{   return Complex((a*t.a+b*t.b)/(t.a*t.a+t.b*t.b), (b*t.a-a*t.b)/(t.a*t.a+t.b*t.b)); }
+
+Complex sin1(Complex &t){
+    Complex si(0,0);
+    si.a=(exp(-t.b)+exp(t.b))*sin(t.a)/2;
+    si.b=(exp(t.b)-exp(-t.b))*cos(t.a)/2;
+    return si;                       }
+
+
+int main(){
+ int y1,y2;
+ cout<<"Vvedite znacenie T (Im(t)>0!):  ";
+ cin>>y1>>y2;
+ Complex y(y1,y2), x(-1000,0), pi(3.14,0), p(0,0), p1(0,0), S(0,0), d(0.1,0), plo(0,0);
+ 
+ for(int j=-10000; j<10000; j++)
+  {
+   x=x+d;
+   p1=y-x;
+   p1=p1*pi;
+   p=sin1(x);
+   p=p/p1;
+   plo=p*d;
+   S=S+plo;
+  }
+  
+ cout<<endl<<"H(sin)("<<y1<<"+i"<<y2<<")= "<<S.a<<"+i("<<S.b<<")";
+  
+ return 0;
+}
