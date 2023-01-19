@@ -1,0 +1,139 @@
+#include<fstream>
+#include<math.h>
+using namespace std;
+const int N=4; //размер матрицы
+
+ifstream fin("In.txt");
+ofstream fout("Out.txt");
+
+int main()
+{
+  double alf[N][N+1],x1[N],x2[N],x3[N],ek=1,e,na,max1=0,max2=0,f,alf2[N][N+1],matrB[N][N],matrC[N][N],matrB1[N][N];
+  int i,j;
+  
+  // ввод матрицы
+  for(i=0;i<N;i++)
+    for(j=0;j<N+1;j++)
+	{
+      fin>>alf[i][j];
+      alf2[i][j]=alf[i][j];
+	}
+  fin>>e;  // точность
+  
+  //переход к матрице альфа
+  for(i=0;i<N;i++)    
+   {
+    f=alf[i][i];
+    for(j=0;j<N;j++)
+      alf[i][j]=-alf[i][j]/f;
+    alf[i][N]=alf[i][N]/f;
+    alf[i][i]=0;
+   }
+   
+  for(i=0;i<N;i++)
+   {
+    max1+=fabs(alf[0][i]);
+    x2[i]=alf[i][N];
+   }
+  
+  // нахождение нормы матрицы альфа
+  for(i=0;i<N;i++)   
+   {
+    for(j=0;j<N;j++)
+      max2+=fabs(alf[i][j]);
+    
+	if(max2>max1) 
+	  max1=max2;
+    
+	max2=0;
+   }
+  na=max1;
+  
+  // образуем матрицу Е-В и С
+  for(i=0;i<N;i++)  
+   {
+    for(j=0;j<N;j++)
+     {
+      if(i>j) 
+	   {
+		matrB[i][j]=-alf[i][j]; 
+		matrC[i][j]=0;
+	   }
+      else 
+	   {
+		matrC[i][j]=alf[i][j]; 
+		matrB[i][j]=0;
+	   }
+      matrB1[i][j]=0;
+     }
+    matrB1[i][i]=1;
+    matrB[i][i]=1;
+   }
+   
+  // находим обратную для Е-В
+  for(int i=0; i<N-1; i++)  
+    for(int j=i+1; j<N; j++)
+    {
+     f=-matrB[j][i]/matrB[i][i];
+     for (int k=0; k<N; k++)
+       matrB1[j][k]+=matrB1[i][k]*f;
+    }
+  
+  // реализация метода Зейделя
+  while(ek>e)     
+   {
+    for(i=0;i<N;i++)
+     {
+      x1[i]=0;
+      for(j=0;j<N;j++)
+       {
+        x1[i]+=matrB1[i][j]*alf[j][N];
+        for(int k=0;k<N;k++)
+          x1[i]+=matrB1[i][k]*matrC[k][j]*x2[j];
+       }
+      x3[i]=fabs(x1[i]-x2[i]);
+      x2[i]=x1[i];
+     }
+    max1=fabs(x3[0]);
+    for(int i=1;i<N;i++)
+      if(fabs(x3[i])>max1) 
+	    max1=fabs(x3[i]);
+    ek=(na*max1)/(1-na);
+   }
+
+ /*
+  //реализация метода простых итераций
+  while(ek>e)
+   {
+    for(i=0;i<N;i++)
+     {
+      x1[i]=alf[i][N];
+      for(j=0;j<N;j++)
+        x1[i]+=alf[i][j]*x2[j];
+      x3[i]=fabs(x1[i]-x2[i]);
+      x2[i]=x1[i];
+     }
+    max1=fabs(x3[0]);
+    for(int i=1;i<N;i++)
+      if(fabs(x3[i])>max1) 
+	   max1=fabs(x3[i]);
+    ek=(na*max1)/(1-na);
+   }
+*/
+
+  // вывод корней
+  for(i=0;i<N;i++)     
+    fout<<endl<<"x"<<(i+1)<<"= "<<x2[i];
+  
+  // проверка корней
+  double c=0;
+  for(i=0;i<N;i++)
+   {
+    for(j=0;j<N;j++)
+      c+=x2[j]*alf2[i][j];
+    fout<<endl<<c;
+    c=0;
+   }
+   
+   return 0;
+}

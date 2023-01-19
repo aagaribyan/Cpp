@@ -1,0 +1,45 @@
+#include <iostream>
+using namespace std;
+const int N=5;
+
+int main()
+{
+ double arr[N][N+1],P[N],Q[N],cor[N],znam,c;
+ 
+ // вводим матрицу
+ for (int i=0; i<N; i++)
+     for(int j=0; j<N+1; j++)
+         cin>>arr[i][j];
+ 
+ // нахождение всех P и Q
+ P[0]=-arr[0][1]/arr[0][0];
+ Q[0]=arr[0][N]/arr[0][0];   // P1 и Q1 вычисляются немного другой формулой
+ for(int i=1; i<N-1; i++)           
+ {
+     znam=arr[i][i]+arr[i][i-1]*P[i-1];
+     P[i]=-arr[i][i+1]/znam;
+     Q[i]=(arr[i][N]-arr[i][i-1]*Q[i-1])/znam;
+ }
+ cor[N-1]=(arr[N-1][N]-arr[N-1][N-2]*Q[N-2])/(arr[N-1][N-1]+arr[N-1][N-2]*P[N-2]);  // Xn=Qn
+ 
+ cout<<endl<<"X"<<(N-1)<<"="<<cor[N-1];
+ 
+ for(int i=N-2; i>=0; i--)
+ {
+     cor[i]=P[i]*cor[i+1]+Q[i];             // все остальные корни
+     cout<<endl<<"X"<<(i+1)<<"="<<cor[i];   // вывод корней
+ }
+ 
+ cout<<"ѕровверка:"<<endl;
+ 
+ // проверка корней
+ for(int i=0; i<N; i++)
+ {
+  c=0;
+  for(int j=0; j<N; j++)
+     c+=arr[i][j]*cor[j];
+  cout<<endl<<c;
+ }
+ 
+ return 0;
+}
