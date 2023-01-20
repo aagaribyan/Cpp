@@ -1,0 +1,65 @@
+#include <iostream>
+using namespace std;
+double X0=-2, X1=2;
+
+double y(double h,  double j)
+{
+  return (3*(X0+j*h)+4)/(2*(X0+j*h)+7);
+}
+
+int main()
+{
+ int i;
+ 
+ // первый проход
+ double h1=1.0, N1=(X1-X0)/h1, FP1=0, FT1, FS1;
+ 
+ // метод прямоугольников
+ for(i=0;i<N1;i++) 
+	 FP1+=y(h1, i+0.5);
+ FP1*=h1;
+ 
+ // метод трапеций
+ FT1=(y(h1, 0)+y(h1, N1))/2;
+ for(i=1;i<N1;i++) 
+	 FT1+=y(h1, i);
+ FT1*=h1;
+ 
+ //Симпсон
+ FS1=y(h1, 0)+y(h1, N1-0.5)+y(h1, N1-0.5);
+ for(i=1;i<N1;i+=2) 
+	 FS1+=(2*y(h1, i)+4*y(h1, i-0.5));
+ FS1*=h1/3;
+ 
+ // второй проход
+ double h2=0.5, N2=(X1-X0)/h2, FP2=0, FT2, FS2;
+ 
+ // метод прямоугольников
+ for(i=0;i<N2;i++) 
+	 FP2+=y(h2, i+0.5);
+ FP2*=h2;
+ cout<<"Metodom pryamougnika:"<<endl<<"1)"<<FP1<<endl<<"2)"<<FP2<<endl;
+ 
+ // метод трапеций
+ FT2=(y(h2, 0)+y(h2, N2))/2;
+ for(i=1;i<N2;i++) 
+	 FT2+=y(h2, i);
+ FT2*=h2;
+ 
+ cout<<"Metodom trapeciy:"<<endl<<"1)"<<FT1<<endl<<"2)"<<FT2<<endl;
+ 
+ // Симпсон
+ FS2=y(h2, 0)+y(h2, N2-0.5)+y(h2, N2-0.5);
+ for(i=1;i<N2;i+=2) 
+	 FS2+=(2*y(h2, i)+4*y(h2, i-0.5));
+ FS2*=h2/3;
+ 
+ cout<<"Metodom Simpsona:"<<endl<<"1)"<<FS1<<endl<<"2)"<<FS2<<endl;
+ 
+ // метод Рунге-Ромберга-Ричардсона
+ double FRRRP=FP1+(FP1-FP2)/(0.25-1), FRRRT=FT1+(FT1-FT2)/(0.25-1), FRRRS=FS1+(FS1-FS2)/(0.25-1);
+ 
+ cout<<FRRRP<<endl<<FRRRT<<endl<<FRRRS;
+ 
+ return 0;
+}
