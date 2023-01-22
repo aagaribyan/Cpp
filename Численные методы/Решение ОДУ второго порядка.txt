@@ -1,0 +1,64 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+
+// функция из задачи
+double g(double x, double y, double z)
+{
+  return (x*(x*x-1)*z+(x*x+1)*y)/(x*x);
+}
+
+int main()
+{
+ int i,N=(2-1)/0.1;
+ 
+ // метод Рунге-Куты четвертого порядка
+ double a=1,h=0.1,yrk[N],dely[N],K[4][N],zrk[N],delz[N],L[4][N];
+ yrk[0]=1+exp(1/2);
+ zrk[0]=2*exp(1/2)-1;
+ for(i=0;i<N-1;i++)
+ {
+   K[0][i]=h*zrk[i];
+   L[0][i]=h*g(a+h*i,yrk[i],zrk[i]);
+   K[1][i]=h*(zrk[i]+L[0][i]/2);
+   L[1][i]=h*g(a+h*(i+1/2),yrk[i]+K[0][i]/2,zrk[i]+L[0][i]/2);
+   K[2][i]=h*(zrk[i]+L[1][i]/2);
+   L[2][i]=h*g(a+h*(i+1/2),yrk[i]+K[1][i]/2,zrk[i]+L[1][i]/2);
+   K[3][i]=h*(zrk[i]+L[2][i]);
+   L[3][i]=h*g(a+h*(i+1),yrk[i]+K[2][i],zrk[i]+L[2][i]);
+   
+   delz[i]=(L[0][i]+2*L[1][i]+2*L[2][i]+L[3][i])/6;
+   zrk[i+1]=zrk[i]+delz[i];
+   
+   dely[i]=(K[0][i]+2*K[1][i]+2*K[2][i]+K[3][i])/6;
+   yrk[i+1]=yrk[i]+dely[i];
+ }
+ 
+ // метод Эйлера
+ double ye[N],ze[N];
+ ye[0]=1+exp(1/2);
+ ze[0]=2*exp(1/2)-1;
+ for(i=1;i<N;i++){
+   ze[i]=ze[i-1]+h*g(a+h*(i-1),ye[i-1],ze[i-1]);
+   ye[i]=ye[i-1]+h*ze[i];}
+   
+ // точное решение (из задачи)
+ double toch[N];
+ for(i=0;i<N;i++) 
+   toch[i]=(1+exp(pow(a+i*h, 2)/2))/(a+i*h);
+ 
+ // выводы
+ cout<<"Рунге-Кут 4-го порядка:"<<endl;
+ for(i=0;i<N;i++)
+ {
+   cout<<yrk[i]<<" = "<<toch[i]<<endl;
+ }
+ 
+ cout<<endl<<"Метод Эйлера"<<endl;												  
+ for(i=0;i<N;i++)
+ {
+   cout<<ye[i]<<" = "<<toch[i]<<endl;
+ }
+ 
+ return 0;
+}
