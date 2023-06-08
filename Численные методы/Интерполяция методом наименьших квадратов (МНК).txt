@@ -1,117 +1,137 @@
 #include <iostream>
 #include<math.h>
 using namespace std;
-const int N=6;
+
+const int N = 6;
+
 
 int main()
 {
- int i,j,n=2,I;
- double f[N]={2.4142,1.0818,0.50953,0.11836,-0.24008,-0.66818},x[N]={1.0,1.9,2.8,3.7,4.6,5.5};
- double A1[n][n+1+n],a1[n+1],X[N],y[N],F[N],Otkl,c;
+ int i, j, n = 2, I;
+ double f[N] = {2.4142, 1.0818, 0.50953, 0.11836, -0.24008, -0.66818}, x[N] = {1.0, 1.9, 2.8, 3.7, 4.6, 5.5};
+ double A1[n][n+1+n], a1[n+1], X[N], y[N], F[N], Otkl, c;
  
  // первая степень
- for(i=0;i<N;i++)
-  {
-   X[i]=0; y[i]=0;
-   for(j=0;j<N;j++)
-    {
-     X[i]+=pow(x[j],i);  // Xi=sum(x^i)
-     y[i]+=f[j]*pow(x[j],i);
-    }
-  }
- X[0]=N;
+ for(i = 0; i<N; i++)
+ {
+   X[i] = 0;
+   y[i] = 0;
+   
+   for(j = 0; j<N; j++)
+   {
+     X[i] += pow(x[j], i);   // Xi = sum(x^i)
+     y[i] += f[j] * pow(x[j], i);
+   }
+ }
+ X[0] = N;
  
  // матрица A1[n+1][n+2] - МНК F1
- for(i=0;i<n;i++) 
-  {
-   for(j=0;j<n;j++)
-    {
-     A1[i][j]=X[i+j];
-     A1[i][n+1+j]=0;
-    }
-   A1[i][n]=y[i];
-   A1[i][n+1+i]=1;
-  }
+ for(i = 0; i<n; i++) 
+ {
+   for(j = 0; j<n; j++)
+   {
+     A1[i][j] = X[i+j];
+     A1[i][n+1+j] = 0;
+   }
+   
+   A1[i][n] = y[i];
+   A1[i][n+1+i] = 1;
+ }
  
  // решаем полученную СЛАУ методом Гаусса
- for(I=0; I<n-1; I++)     //нижний треугольник
-  for(i=I+1; i<n; i++)
+ for(I = 0;  I<n-1;  I++)     //нижний треугольник
+ {
+  for(i = I+1;  i<n;  i++)
    {
-   c=-A1[i][I]/A1[I][I];
-   for (j=0; j<n+1+n; j++)
-     A1[i][j]=A1[i][j]+A1[I][j]*c;
+    c = -A1[i][I]/A1[I][I];
+   
+    for (j = 0;  j<n+1+n;  j++)
+      A1[i][j] = A1[i][j] + A1[I][j]*c;
    }
- 
- for(I=n-1; I>0; I--)     //верхний треугольник
-  for(i=I-1; i>=0; i--)
-  {
-   c=-A1[i][I]/A1[I][I];
-   for (j=0; j<n+1+n; j++)
-     A1[i][j]=A1[i][j]+A1[I][j]*c;
   }
  
- for(i=0; i<n; i++)
+ for(I = n-1;  I>0;  I--)     //верхний треугольник
  {
-   a1[i]=A1[i][n]/A1[i][i];
-   cout<<"a"<<i<<"="<<a1[i]<<" ";
+  for(i = I-1;  i> = 0;  i--)
+  {
+   c = -A1[i][I]/A1[I][I];
+   
+   for (j = 0;  j<n+1+n;  j++)
+     A1[i][j] = A1[i][j] + A1[I][j]*c;
+  }
  }
  
- for(i=0;i<N;i++)
+ for(i = 0;  i<n;  i++)
  {
-   F[i]=a1[0]+a1[1]*x[i];
-   Otkl+=pow(F[i]-f[i], 2);
-   cout<<"F"<<i<<"="<<F[i]<<" ";
+   a1[i] = A1[i][n] / A1[i][i];
+   cout << "a" << i << " = " << a1[i] << " ";
  }
  
- cout<<endl<<"Сумма квадратов ошибок="<<Otkl<<endl<<endl;
+ for(i = 0; i<N; i++)
+ {
+   F[i] = a1[0] + a1[1]*x[i]; 
+   Otkl += pow(F[i] - f[i], 2); 
+   cout << "F" << i << " = " << F[i] << " "; 
+ }
+ 
+ cout << endl << "Сумма квадратов ошибок = " << Otkl << endl << endl; 
  
  
  // вторая степень
- n++; Otkl=0;
- double A2[n][n+1+n],a2[n];
+ n++;
+ Otkl = 0; 
+ double A2[n][n+1+n], a2[n]; 
  
  // матрица A2[n+1][n+2] - МНК F2
- for(i=0;i<n;i++)
+ for(i = 0; i<n; i++)
  {
-   for(j=0;j<n;j++)
+   for(j = 0; j<n; j++)
    {
-     A2[i][j]=X[i+j];
-     A2[i][n+1+j]=0;
+     A2[i][j] = X[i+j]; 
+     A2[i][n+1+j] = 0; 
    }
-   A2[i][n]=y[i];
-   A2[i][n+1+i]=1;
+   A2[i][n] = y[i]; 
+   A2[i][n+1+i] = 1; 
  }
  
  // решаем полученную СЛАУ методом Гаусса
- for(I=0; I<n-1; I++)     //нижний треугольник
-  for(i=I+1; i<n; i++)
-  {
-   c=-A2[i][I]/A2[I][I];
-   for (j=0; j<n+1+n; j++)
-     A2[i][j]=A2[i][j]+A2[I][j]*c;
-  }
-  
- for(I=n-1; I>0; I--)     //верхний треугольник
-  for(i=I-1; i>=0; i--)
-  {
-   c=-A2[i][I]/A2[I][I];
-   for (j=0; j<n+1+n; j++)
-     A2[i][j]=A2[i][j]+A2[I][j]*c;
-  }
-  
- for(i=0; i<n; i++)
+ for(I = 0;  I<n-1;  I++)     //нижний треугольник
  {
-   a2[i]=A2[i][n]/A2[i][i];
-   cout<<"a"<<i<<"="<<a2[i]<<" ";
+  for(i = I+1;  i<n;  i++)
+  {
+   c = -A2[i][I]/A2[I][I];
+   
+   for (j = 0;  j<n+1+n;  j++)
+     A2[i][j] = A2[i][j] + A2[I][j]*c;
+  }
+ }
+  
+ for(I = n-1;  I>0;  I--)     //верхний треугольник
+ {
+  for(i = I-1;  i> = 0;  i--)
+  {
+   c = -A2[i][I] / A2[I][I];
+   
+   for (j = 0;  j<n+1+n;  j++)
+     A2[i][j] = A2[i][j] + A2[I][j]*c;
+  }
+ }
+  
+ for(i = 0;  i<n;  i++)
+ {
+   a2[i] = A2[i][n]/A2[i][i];
+   cout << "a" << i << " = " << a2[i] << " ";
  }
  
- for(i=0;i<N;i++)
+ for(i = 0; i<N; i++)
  {
-   F[i]=a2[0]+a2[1]*x[i]+a2[2]*pow(x[i],2);
-   Otkl+=pow(F[i]-f[i], 2);
-   cout<<"F"<<i<<"="<<F[i]<<" ";
+   F[i] = a2[0] + a2[1]*x[i] + a2[2]*pow(x[i], 2);
+   Otkl += pow(F[i] - f[i], 2);
+   
+   cout << "F" << i << " = " << F[i] << " ";
  }
- cout<<endl<<"Сумма квадратов ошибок="<<Otkl<<endl;
+ 
+ cout << endl << "Сумма квадратов ошибок = " << Otkl << endl;
   
  return 0;
 }
