@@ -1,126 +1,152 @@
 #include <iostream>
 #include <math.h>
 using namespace std;
-const int N=4;
 
+const int N = 4;
+
+
+// фунция умножения строки матрицы на число
 void mstr(double ar[N][N+1+N], int i, double c)
 {
-for (int j=0; j<N+1+N; j++)
-ar[i][j]=ar[i][j]*c;
+  for (int j = 0; j<N+1+N; j++)
+    ar[i][j] = ar[i][j] * c;
 }
 
+//функция сложения строк матрицы
 void addstr(double ar[N][N+1+N], int f, int t, double c)
 {
-for (int i=0; i<N+1+N; i++)
-ar[t][i]=ar[t][i]+ar[f][i]*c;
+  for (int i = 0; i<N+1+N; i++)
+    ar[t][i] = ar[t][i] + ar[f][i]*c;
 }
 
+//вывод матрицы в консоль
 void check(double ar[N][N+1+N])
 {
-cout<<endl;
-for(int i=0; i<N; i++)
- {
- for(int j=0; j<N+1+N; j++)
-  cout<<ar[i][j]<<' ';
- cout<<endl;
- }
+  cout << endl;
+  for(int i = 0; i<N; i++)
+   {
+    for(int j = 0; j<N+1+N; j++)
+      cout << ar[i][j] << ' ';
+    
+	cout << endl;
+   }
 }
+
 
 int main()
 {
-double arr[N][N+1+N], arr2[N][N], c, det=1, max1;
-int I1=0;
+  double arr[N][N+1+N], arr2[N][N];
+  double c, det = 1, max1;
+  int I1 = 0;
+  
+  //обнуление массива
+  for (int i = 0; i<N; i++)
+    for(int j = 0; j<N+1+N; j++)
+      arr[i][j] = 0;
+  
+  //ввод матрицы через консоль
+  for (int i = 0; i<N; i++)
+    for(int j = 0; j<N+1; j++)
+      cin >> arr[i][j];
 
-for (int i=0; i<N; i++)
- for(int j=0; j<N+1+N; j++)
-  arr[i][j]=0;               //обнуляем массив
+  for (int i = 0; i<N; i++)
+    for(int j = 0; j<N; j++)
+      arr2[i][j] = arr[i][j];
+  
+  //единичная матрица справа
+  for (int i = 0; i<N; i++)
+    arr[i][N+1+i] = 1;
 
-for (int i=0; i<N; i++)
- for(int j=0; j<N+1; j++)
-  cin>>arr[i][j];            //заполняем матрицу
-
-for (int i=0; i<N; i++)
- for(int j=0; j<N; j++)
-     arr2[i][j]=arr[i][j];
-
-for (int i=0; i<N; i++)
- arr[i][N+1+i]=1;            //единичная матрица справа
-
-check(arr);
-
-for(int i=0; i<N-1; i++)     //расставление максимальных элементов по главной диагонали
- {
- max1=fabs(arr[i][i]);
- for(int j=i+1;j<N; j++)
-  if(fabs(arr[j][i])>max1)
+  check(arr);
+  
+  //расставление максимальных элементов по главной диагонали
+  for(int i = 0; i<N-1; i++)
    {
-   max1=fabs(arr[j][i]);
-   I1=j;
+    max1 = fabs(arr[i][i]);
+    for(int j = i+1; j<N; j++)
+      if(fabs(arr[j][i]) > max1)
+       {
+         max1 = fabs(arr[j][i]);
+         I1 = j;
+       }
+
+    if(fabs(I1 != 0))
+     {
+      for(int k = 0; k<N+1+N; k++)
+        swap(arr[i][k], arr[I1][k]);
+      
+	  // учитываем перестановку строк в определителе
+      det = det*pow(-1, I1-i);
+     }
+
+    I1 = 0;
    }
 
- if(fabs(I1!=0))
-  {
-  for(int k=0; k<N+1+N; k++)
-   swap(arr[i][k], arr[I1][k]);
-  det=det*pow(-1, I1-i);   // учитываем перестановку строк в определителе
-  }
-
- I1=0;
- }
-
-check(arr);
-
-for(int I=0; I<N-1; I++)     //нижний треугольник
- for(int i=I+1; i<N; i++)
-  {
-  c=-arr[i][I]/arr[I][I];
-  addstr(arr, I, i, c);
   check(arr);
-  }
+  
+  //нижний треугольник
+  for(int I = 0; I<N-1; I++)
+    for(int i = I+1; i<N; i++)
+     {
+      c = -arr[i][I] / arr[I][I];
+      addstr(arr, I, i, c);
+      check(arr);
+     }
+  
+  //верхний треугольник
+  for(int I = N-1; I>0; I--)
+    for(int i = I-1; i >= 0; i--)
+     {
+      c = -arr[i][I] / arr[I][I];
+      addstr(arr, I, i, c);
+      check(arr);
+     }
 
-for(int I=N-1; I>0; I--)     //верхний треугольник
- for(int i=I-1; i>=0; i--)
-  {
-  c=-arr[i][I]/arr[I][I];
-  addstr(arr, I, i, c);
-  check(arr);
-  }
+  //нахождение определителя
+  for(int i = 0; i<N; i++)
+    det = det*arr[i][i];
 
-for(int i=0; i<N; i++)       //нахождение определителя
- det=det*arr[i][i];
-
-for(int i=0; i<N; i++)       //объединичивание
- {
- c=1/arr[i][i];
- mstr(arr, i, c);
- }
-
-check(arr);
-
-for(int i=0; i<N; i++)       //вывод корней
- {
- cout<<endl<<arr[i][N];
- }
-
-for(int i=0; i<N; i++)       //проверка корней
- {
- c=0;
- for(int j=0; j<N; j++)
-    c+=arr2[i][j]*arr[j][N];
- cout<<endl<<c;
- }
-
-for(int i=0; i<N; i++)      //проверка обратной матрицы
- {
-  for(int j=0; j<N; j++)
+  //объединичивание
+  for(int i = 0; i<N; i++)
    {
-   for(int h=0; h<N; h++)
-     arr2[i][j]+=arr2[i][h]*arr[h][N+1+j];
-   cout<<arr2[i][j]<<"__";
+    c = 1 / arr[i][i];
+    mstr(arr, i, c);
    }
- cout<<endl;
- }
-cout<<endl<<"det="<<det;
 
-return 0;
+  check(arr);
+
+  //вывод корней
+  for(int i = 0; i<N; i++)
+   {
+    cout << endl << arr[i][N];
+   }
+  
+  //проверка корней
+  for(int i = 0; i<N; i++)
+   {
+    c = 0;
+    for(int j = 0; j<N; j++)
+      c += arr2[i][j]*arr[j][N];
+    
+	cout << endl << c;
+   }
+
+  //проверка обратной матрицы
+  for(int i = 0; i<N; i++)
+   {
+    for(int j = 0; j<N; j++)
+     {
+      for(int h = 0; h<N; h++)
+        arr2[i][j] += arr2[i][h]*arr[h][N+1+j];
+      
+	  cout << arr2[i][j] << "__";
+     }
+	 
+    cout << endl; 
+   }
+   
+  cout << endl << "det = " << det;
+
+
+  return 0;
 }

@@ -1,65 +1,68 @@
 #include<fstream>
 #include<cmath>
 using namespace std;
-const int N=3;
 
-ifstream fin("In.txt");
-ofstream fout("Out.txt");
+const int N = 3;
+
+ifstream fin("In.txt"); 
+ofstream fout("Out.txt"); 
+
 
 int main()
 {
- double arr[N][N], y0[N], zk[N], L[N], L0[N], e, max1=0, pogr;
- int i,j,t=1;
+ double arr[N][N], y0[N], zk[N], L[N], L0[N], e, max1 = 0, pogr;
+ int i, j, t = 1;
  
  // ввод матрицы
- for(i=0;i<N;i++)
+ for(i = 0; i<N; i++)
   {
-   zk[i]=0;
-   y0[i]=1;
-   L[i]=0;
-   L0[i]=1;
-   for(j=0;j<N;j++)
-     fin>>arr[i][j];
+   zk[i] = 0;
+   y0[i] = 1;
+   L[i] = 0;
+   L0[i] = 1;
+   for(j = 0; j<N; j++)
+     fin >> arr[i][j];
   }
   
- fin>>e; // точность
+ fin >> e;  // точность
  
  while(pogr>e)
   {
-   for(i=0;i<N;i++)
+   for(i = 0; i<N; i++)
     {
-     L0[i]=L[i]; // записываем лямбды предыдущей итерации
+     L0[i] = L[i];  // записываем лямбды предыдущей итерации
      
 	 // вычисление z^(k)
-	 for(j=0;j<N;j++)
-       zk[i]+=arr[i][j]*y0[j];
+	 for(j = 0; j<N; j++)
+       zk[i] += arr[i][j]*y0[j];
      
 	 // норма z^(k)
 	 if(fabs(zk[i])>max1)
-       max1=zk[i];
+       max1 = zk[i];
     }
 	
    // вычисление лямбд текущей итерации
-   for(i=0;i<N;i++)
-     L[i]=zk[i]/y0[i];
+   for(i = 0; i<N; i++)
+     L[i] = zk[i] / y0[i];
    
    // подготовка к следующей итерации
-   for(i=0;i<N;i++)
+   for(i = 0; i<N; i++)
     {
-     y0[i]=zk[i]/max1;
-     zk[i]=0;
+     y0[i] = zk[i] / max1;
+     zk[i] = 0;
     }
 	
-   max1=0;
-   pogr=fabs(L[1]-L0[1]); // погрешность текущей итерации
+   max1 = 0;
+   pogr = fabs(L[1] - L0[1]);  // погрешность текущей итерации
    
-   fout<<"Иттерация №"<<t<<": |Л("<<t<<") - Л("<<t-1<<")| = "<<pogr<<endl;
+   fout << "Иттерация №" << t << ": |Л(" << t << ") - Л(" << t-1 << ")|  =  " << pogr << endl;
    t++;
   }
  
  // вывод итогового собственного вектора
- for(i=0;i<N;i++)
-   fout<<"Л"<<i+1<<"= "<<L[i]<<endl;
+ for(i = 0; i<N; i++)
+   fout << "Л" << i+1 << " =  " << L[i] << endl;
  
- return 0;
+ 
+ return 0; 
 }
